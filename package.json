@@ -1,0 +1,34 @@
+{
+  "name": "busowner",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=debug nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.0",
+    "aws-sdk": "^2.1176.0",
+    "axios": "^0.27.2",
+    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.4.4",
+    "mongoose-extend-schema": "^1.0.0",
+    "nodemon": "^2.0.19",
+    "path": "^0.12.7",
+    "twilio": "^3.79.0",
+    "uuid": "^8.3.2",
+    "validator": "^13.7.0",
+    "winston": "^3.8.1",
+    "winston-mongodb": "^5.0.7"
+  }
+}

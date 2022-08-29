@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    command: npm start
+    ports:
+      - '8002:8002'
+    volumes:
+      - .:/usr/app
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
