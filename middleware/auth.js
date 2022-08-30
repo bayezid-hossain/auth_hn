@@ -3,7 +3,16 @@ const catchAsyncErrors = require('./catchAsyncErrors');
 const jwt = require('jsonwebtoken');
 
 const busOwner = require('../models/busOwnerModel');
+const driver = require('../models/driverModel');
+const superUser = require('../models/superUserModel');
+//Find valid user
 
+function findValidUserType(role) {
+  if (role == 'busOwner') return busOwner;
+  else if (role == 'driver') return driver;
+  else if (role == 'admin') return superUser;
+  return;
+}
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
@@ -12,10 +21,19 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.user = await busOwner.findById(decodedData.id);
+  let User = findValidUserType(decodedData.role);
+  req.user = await User.findById(decodedData.id);
 
   next();
 });
+
+exports.setUserType = (...role) => {
+  return (req, res, next) => {
+    req.body.role = role[0];
+
+    next();
+  };
+};
 exports.isLoggedInUser = catchAsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
   if (!token) {
@@ -24,6 +42,7 @@ exports.isLoggedInUser = catchAsyncErrors(async (req, res, next) => {
 
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
+  console.log(decodedData.role);
   req.user = await busOwner.findById(decodedData.id);
   try {
     if (!req.user.loggedIn) {

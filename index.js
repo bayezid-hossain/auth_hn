@@ -1,5 +1,4 @@
 const app = require('./app');
-const dotenv = require('dotenv');
 const connectDatabase = require('./config/database');
 
 //Handling Uncaught Exception
@@ -10,16 +9,10 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-// //config
-// console.log('ENVIRONMENT: ' + process.env.NODE_ENV);
-
-// if (process.env.NODE_ENV === 'debug')
-//   dotenv.config({ path: 'config/config.env' });
-
 //Connecting to database
 connectDatabase();
-const server = app.listen(process.env.BUSOWNERPORT, () => {
-  console.log(`busowner is listening to localhost:${process.env.BUSOWNERPORT}`);
+const server = app.listen(process.env.AUTHPORT, () => {
+  console.log(`auth is listening to localhost:${process.env.AUTHPORT}`);
 });
 
 // Unhandled Promise Rejection

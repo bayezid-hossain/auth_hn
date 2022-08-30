@@ -60,6 +60,18 @@ const busOwnerSchema = extendSchema(baseUserModel.schema, {
     type: String,
     default: 'bkash',
   },
+  pin: {
+    type: String,
+    required: [true, 'Please enter your pin'],
+    minlength: [4, 'Pin should be minimum 4 digits long'],
+    validate: {
+      validator: function (arr) {
+        return !isNaN(arr);
+      },
+      message: 'Please enter valid pin (0-9)',
+    },
+    select: false,
+  },
   email: {
     type: String,
     required: [true, 'Please Enter Your Email'],

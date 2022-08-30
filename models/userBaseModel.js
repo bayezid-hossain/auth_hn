@@ -27,18 +27,6 @@ const UserSchema = new mongoose.Schema({
       message: 'Please Enter a valid Phone Number',
     },
   },
-  pin: {
-    type: String,
-    required: [true, 'Please enter your pin'],
-    minlength: [4, 'Pin should be minimum 4 digits long'],
-    validate: {
-      validator: function (arr) {
-        return !isNaN(arr);
-      },
-      message: 'Please enter valid pin (0-9)',
-    },
-    select: false,
-  },
   role: {
     type: String,
     default: 'passenger',
@@ -60,6 +48,7 @@ UserSchema.methods.getJWTToken = function () {
   return jwt.sign(
     {
       id: this._id,
+      role: this.role,
     },
     process.env.JWT_SECRET,
     {
