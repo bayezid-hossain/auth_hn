@@ -1,10 +1,7 @@
 const winston = require('winston');
 require('winston-mongodb');
-const dotenv = require('dotenv');
 const { createLogger, format, transports } = require('winston');
 const { combine, splat, timestamp, printf } = format;
-if (process.env.NODE_ENV === 'debug')
-  dotenv.config({ path: 'config/config.env' });
 const myFormat = printf(({ level, message, timestamp, ...metadata }) => {
   let msg = `${timestamp} [${level}] : ${message} `;
   return msg;
