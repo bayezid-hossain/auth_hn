@@ -8,7 +8,7 @@ const superUser = require('../models/superUserModel');
 //Find valid user
 
 function findValidUserType(role) {
-  if (role == 'busOwner') return busOwner;
+  if (role == 'busOwner'.toLowerCase()) return busOwner;
   else if (role == 'driver') return driver;
   else if (role == 'admin') return superUser;
   return;
@@ -21,7 +21,7 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-  let User = findValidUserType(decodedData.role);
+  let User = findValidUserType(decodedData.role.toLowerCase());
   req.user = await User.findById(decodedData.id);
 
   next();

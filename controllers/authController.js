@@ -1,6 +1,7 @@
 const ErrorHandler = require('../utils/errorhandler');
 const catchAsyncErrors = require('../middleware/catchAsyncErrors');
 const BusOwner = require('../models/busOwnerModel');
+const Bus = require('../models/busModel');
 const sendToken = require('../utils/jwtToken');
 const { generateOtp, sendOtp } = require('../utils/sendSms');
 const Driver = require('../models/driverModel');
@@ -21,6 +22,39 @@ exports.loginUser = catchAsyncErrors(async (req, res, next, userType) => {
   //checking if user has given pin and phone both
   const profiler = logger.startTimer();
   let User = findValidUserType(req.body.role);
+  if (!User) return next(new ErrorHandler('Invalid login information', 400));
+  if (req.body.role == 'driver') {
+    const { busLicenseNumber, drivingLicenseNumber } = req.body;
+    let isValidDriver = await User.findOne({
+      licenseNumber: drivingLicenseNumber,
+    });
+    let isValidBus = await Bus.findOne({
+      busLicenseNumber,
+    }).select('owner');
+    if (isValidDriver && isValidBus) {
+      if (isValidDriver.owner._id.equals(isValidBus.owner._id)) {
+        const otp = generateOtp();
+        const update = {
+          otp: otp,
+          otpExpire: Date.now() + 5 * 60000,
+        };
+        isValidDriver = await User.findOneAndUpdate(
+          { drivingLicenseNumber },
+          update,
+          {
+            new: true,
+            runValidators: true,
+            useFindAndModify: false,
+          }
+        ).select('id otp phone name role');
+        sendOtp(isValidDriver.phone, otp);
+        sendToken(isValidDriver, 200, res);
+        return;
+      }
+      return next(new ErrorHandler('Invalid login information', 400));
+    }
+    return next(new ErrorHandler('Invalid login information', 400));
+  }
   const { email, phone, pin } = req.body;
   if (!email && !phone) {
     return next(new ErrorHandler('Invalid login information', 400));
@@ -71,9 +105,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next, userType) => {
   sendToken(user, 200, res);
 });
 
-//upload company information name,tin,trade
-
-//verify OTP for busowner
+//verify OTP for everyone
 exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
   const profiler = logger.startTimer();
   if (!req.user) {
@@ -107,6 +139,23 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
+//Register a busOwner
+
+exports.registerBusOwner = catchAsyncErrors(async (req, res, next) => {
+  const { name, phone, pin, email } = req.body;
+
+  const user = await BusOwner.create({
+    name,
+    phone,
+    email,
+    pin,
+    role: 'busOwner',
+  });
+
+  logger.warning(` ${user.name} : ${user.phone} (${user._id}) registered!`);
+  res.redirect(307, '/api/v1/auth/busowner/login');
+  // sendToken(user, 201, res);
+});
 exports.logout = catchAsyncErrors(async (req, res, next) => {
   const profiler = logger.startTimer();
   const user = req.user;

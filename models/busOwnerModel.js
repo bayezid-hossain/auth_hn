@@ -35,6 +35,12 @@ const busOwnerSchema = extendSchema(baseUserModel.schema, {
       ref: 'Driver',
     },
   ],
+  buses: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Bus',
+    },
+  ],
   routes: [
     {
       type: mongoose.Schema.ObjectId,
