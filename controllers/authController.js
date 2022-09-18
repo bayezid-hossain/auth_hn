@@ -114,7 +114,7 @@ exports.verifyOtp = catchAsyncErrors(async (req, res, next) => {
   const id = req.user.id;
   let User = findValidUserType(req.user.role);
   const user = await User.findOne({
-    id: id,
+    _id: id,
     otpExpire: { $gt: Date.now() },
   });
   if (!user) {

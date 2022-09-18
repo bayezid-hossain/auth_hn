@@ -7,10 +7,6 @@ const extendSchema = require('mongoose-extend-schema');
 const superUserSchema = extendSchema(
   baseUserModel.schema,
   {
-    addedBy: {
-      type: String,
-      default: 'default',
-    },
     pin: {
       type: String,
       required: [true, 'Please enter your pin'],
